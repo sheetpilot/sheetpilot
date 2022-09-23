@@ -36,8 +36,8 @@ spec:
             cpu: "1"
             memory: 10Gi
           requests:
-            cpu: 5300m
-            memory: 5Gi
+            cpu: 500m
+            memory: 2Gi
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
       dnsPolicy: ClusterFirst

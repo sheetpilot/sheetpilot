@@ -20,7 +20,7 @@ func main() {
 		log.Println(err)
 	}
 	Obj := updateManifest.UpdateReplicas(obj, numOfReplica)
-	Obj := updateManifest.UpdateResources(Obj, 500, 2)
+	Obj = updateManifest.UpdateResources(Obj, 500, 2)
 	newFile, err := os.Create(fname)
 	if err != nil {
 		log.Println(err)
