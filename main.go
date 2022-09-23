@@ -19,12 +19,13 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	updatedObj := updateManifest.UpdateReplicas(obj, numOfReplica)
+	Obj := updateManifest.UpdateReplicas(obj, numOfReplica)
+	Obj := updateManifest.UpdateResources(Obj, 500, 2)
 	newFile, err := os.Create(fname)
 	if err != nil {
 		log.Println(err)
 	}
 	y := printers.YAMLPrinter{}
 	defer newFile.Close()
-	y.PrintObj(updatedObj, newFile)
+	y.PrintObj(Obj, newFile)
 }
