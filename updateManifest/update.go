@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-// CheckDeployment is deployment name correct or not?
+// CheckDeployment check deployment name and return k8s Object if correct
 func CheckDeployment(name string, yamlData []byte) (runtime.Object, error) {
 	var deployment *appsv1.Deployment
 	decoder := scheme.Codecs.UniversalDeserializer()
@@ -32,6 +32,7 @@ func int32Ptr(i int32) *int32 {
 	return &i
 }
 
+// UpdateReplicas update replica count
 func UpdateReplicas(obj runtime.Object, n int32) runtime.Object {
 	deployment := obj.(*appsv1.Deployment)
 	deployment.Spec.Replicas = int32Ptr(n)
@@ -39,6 +40,7 @@ func UpdateReplicas(obj runtime.Object, n int32) runtime.Object {
 	return obj
 }
 
+// UpdateResources update resource request
 func UpdateResources(obj runtime.Object, cpu, men int64) runtime.Object {
 	deployment := obj.(*appsv1.Deployment)
 	deployment.Spec.Template.Spec.Containers[0].Resources.Requests = make(map[corev1.ResourceName]resource.Quantity)
