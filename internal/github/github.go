@@ -2,19 +2,23 @@ package github
 
 import (
 	"fmt"
+	"os"
+	"time"
+
 	git "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
-	"os"
-	"time"
+	"github.com/sirupsen/logrus"
 )
 
-func Clone(repo, pat string) (string, error) {
+func Clone(repo, pat string, log *logrus.Entry) (string, error) {
 
 	tempDir, err := os.MkdirTemp("", "sheet-pilot")
 	if err != nil {
 		return "", fmt.Errorf("can not create temporary directory: %w", err)
 	}
+
+	log.Infof("cloning %s repo into the %s path", repo, tempDir)
 
 	if _, err := git.PlainClone(tempDir, false, &git.CloneOptions{
 		Auth: &http.BasicAuth{
@@ -26,11 +30,12 @@ func Clone(repo, pat string) (string, error) {
 	}); err != nil {
 		return "", fmt.Errorf("can not clone repo: %w", err)
 	}
+	log.Infof("%s repo successfully cloned into %s", repo, tempDir)
 
 	return tempDir, nil
 }
 
-func Commit(repoPath string) error {
+func Commit(repoPath string, log *logrus.Entry) error {
 	r, err := git.PlainOpen(repoPath)
 	if err != nil {
 		return fmt.Errorf("can not open temporary git repo directory: %w", err)
@@ -55,10 +60,12 @@ func Commit(repoPath string) error {
 		return fmt.Errorf("can not commit: %w", err)
 	}
 
+	log.Infof("git commit completed")
+
 	return nil
 }
 
-func Push(repoPath, owner, pat string) (error, func()) {
+func Push(repoPath, owner, pat string, log *logrus.Entry) (error, func(log *logrus.Entry)) {
 	r, err := git.PlainOpen(repoPath)
 	if err != nil {
 		return fmt.Errorf("can not open temporary git repo directory: %w", err), nil
@@ -73,8 +80,10 @@ func Push(repoPath, owner, pat string) (error, func()) {
 	}); err != nil {
 		return fmt.Errorf("can not push: %w", err), nil
 	}
+	log.Infof("git push completed")
 
-	return nil, func() {
+	return nil, func(log *logrus.Entry) {
 		os.RemoveAll(repoPath)
+		log.Infof("cleanup temporary directory")
 	}
 }
