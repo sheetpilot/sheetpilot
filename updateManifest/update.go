@@ -32,21 +32,16 @@ func int32Ptr(i int32) *int32 {
 	return &i
 }
 
-// UpdateReplicas update replica count
-func UpdateReplicas(obj runtime.Object, n int32) runtime.Object {
-	deployment := obj.(*appsv1.Deployment)
-	deployment.Spec.Replicas = int32Ptr(n)
-
-	return obj
-}
-
-// UpdateResources update resource request
-func UpdateResources(obj runtime.Object, cpu, men int64) runtime.Object {
+// UpdateResourceValues update Deployment resource values
+func UpdateResourceValues(obj runtime.Object, cpuRequest, menRequest, cpuLimit, memLimit int64, replicaCount int32) runtime.Object {
 	deployment := obj.(*appsv1.Deployment)
 	deployment.Spec.Template.Spec.Containers[0].Resources.Requests = make(map[corev1.ResourceName]resource.Quantity)
 
-	deployment.Spec.Template.Spec.Containers[0].Resources.Requests[corev1.ResourceCPU] = *resource.NewMilliQuantity(cpu, resource.DecimalSI)
-	deployment.Spec.Template.Spec.Containers[0].Resources.Requests[corev1.ResourceMemory] = *resource.NewQuantity(men*1024*1024*1024, resource.BinarySI)
+	deployment.Spec.Template.Spec.Containers[0].Resources.Requests[corev1.ResourceCPU] = *resource.NewMilliQuantity(cpuRequest, resource.DecimalSI)
+	deployment.Spec.Template.Spec.Containers[0].Resources.Requests[corev1.ResourceMemory] = *resource.NewQuantity(menRequest*1024*1024*1024, resource.BinarySI)
+	deployment.Spec.Template.Spec.Containers[0].Resources.Limits[corev1.ResourceCPU] = *resource.NewMilliQuantity(cpuLimit, resource.DecimalSI)
+	deployment.Spec.Template.Spec.Containers[0].Resources.Limits[corev1.ResourceMemory] = *resource.NewQuantity(memLimit*1024*1024*1024, resource.BinarySI)
+	deployment.Spec.Replicas = int32Ptr(replicaCount)
 
 	return obj
 }

@@ -19,35 +19,45 @@ func main() {
 	tempDir, err := github.Clone(gitURL, pat)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
-	m, _ := findDeployment(tempDir)
-
-	yamlData, err := os.ReadFile(m[app])
+	appFiles, err := findDeployment(tempDir)
 	if err != nil {
 		log.Println(err)
+		return
+	}
+
+	yamlData, err := os.ReadFile(appFiles[app])
+	if err != nil {
+		log.Println(err)
+		return
 	}
 	obj, err := updateManifest.CheckDeployment(app, yamlData)
 	if err != nil {
 		log.Println(err)
+		return
 	}
-	Obj := updateManifest.UpdateReplicas(obj, numOfReplica)
-	Obj = updateManifest.UpdateResources(Obj, 700, 1)
-	newFile, err := os.Create(m[app])
+
+	updatedObj := updateManifest.UpdateResourceValues(obj, 700, 1, 1000, 2, numOfReplica)
+
+	newFile, err := os.Create(appFiles[app])
 	if err != nil {
 		log.Println(err)
 	}
 	y := printers.YAMLPrinter{}
 	defer newFile.Close()
-	y.PrintObj(Obj, newFile)
+	y.PrintObj(updatedObj, newFile)
 
 	if err = github.Commit(tempDir); err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	err, cleanup := github.Push(tempDir, owner, pat)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 	defer cleanup()
 }

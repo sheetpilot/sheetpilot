@@ -15,7 +15,6 @@ func Clone(repo, pat string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("can not create temporary directory: %w", err)
 	}
-	fmt.Println(tempDir)
 
 	if _, err := git.PlainClone(tempDir, false, &git.CloneOptions{
 		Auth: &http.BasicAuth{
@@ -37,17 +36,16 @@ func Commit(repoPath string) error {
 		return fmt.Errorf("can not open temporary git repo directory: %w", err)
 	}
 
-	w, err := r.Worktree()
+	commitWorkTree, err := r.Worktree()
 	if err != nil {
 		return fmt.Errorf("something wrong with git repo: %w", err)
 	}
 
-	if _, err := w.Add("."); err != nil {
+	if _, err := commitWorkTree.Add("."); err != nil {
 		return fmt.Errorf("can not add: %w", err)
 	}
 
-	fmt.Println(w.Status())
-	if _, err := w.Commit("updated", &git.CommitOptions{
+	if _, err := commitWorkTree.Commit("updated", &git.CommitOptions{
 		Author: &object.Signature{
 			Name:  "sheetPilot",
 			Email: "info@sheetpilot.io",
