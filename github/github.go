@@ -60,10 +60,10 @@ func Commit(repoPath string) error {
 	return nil
 }
 
-func Push(repoPath, owner, pat string) error {
+func Push(repoPath, owner, pat string) (error, func()) {
 	r, err := git.PlainOpen(repoPath)
 	if err != nil {
-		return fmt.Errorf("can not open temporary git repo directory: %w", err)
+		return fmt.Errorf("can not open temporary git repo directory: %w", err), nil
 	}
 
 	if err = r.Push(&git.PushOptions{
@@ -73,8 +73,10 @@ func Push(repoPath, owner, pat string) error {
 		},
 		Progress: os.Stdout,
 	}); err != nil {
-		return fmt.Errorf("can not push: %w", err)
+		return fmt.Errorf("can not push: %w", err), nil
 	}
 
-	return nil
+	return nil, func() {
+		os.RemoveAll(repoPath)
+	}
 }

@@ -7,24 +7,33 @@ import (
 	"k8s.io/cli-runtime/pkg/printers"
 	"log"
 	"os"
-	"path/filepath"
 )
 
 func main() {
-	fname := "nginx-deployment.yaml"
-	deployName := "my-nginx"
-	var numOfReplica int32 = 5
-	yamlData, err := os.ReadFile(fname)
+	pat := ""
+	gitURL := "https://github.com/sheetpilot/sample-deployment.git"
+	owner := "dtherhtun"
+	app := "admin"
+	var numOfReplica int32 = 10
+
+	tempDir, err := github.Clone(gitURL, pat)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	m, _ := findDeployment(tempDir)
+
+	yamlData, err := os.ReadFile(m[app])
 	if err != nil {
 		log.Println(err)
 	}
-	obj, err := updateManifest.CheckDeployment(deployName, yamlData)
+	obj, err := updateManifest.CheckDeployment(app, yamlData)
 	if err != nil {
 		log.Println(err)
 	}
 	Obj := updateManifest.UpdateReplicas(obj, numOfReplica)
-	Obj = updateManifest.UpdateResources(Obj, 500, 2)
-	newFile, err := os.Create(fname)
+	Obj = updateManifest.UpdateResources(Obj, 700, 1)
+	newFile, err := os.Create(m[app])
 	if err != nil {
 		log.Println(err)
 	}
@@ -32,25 +41,13 @@ func main() {
 	defer newFile.Close()
 	y.PrintObj(Obj, newFile)
 
-	pat := ""
-	gitURL := "https://github.com/sheetpilot/sample-deployment.git"
-	owner := "dtherhtun"
-
-	tempDir, err := github.Clone(gitURL, pat)
-	if err != nil {
-		fmt.Println(err)
-	}
-	testfile := filepath.Join(tempDir, "testfile.txt")
-	err = os.WriteFile(testfile, []byte("hello world!"), 0644)
-	if err != nil {
-		fmt.Println("can not create test file")
-	}
 	if err = github.Commit(tempDir); err != nil {
 		fmt.Println(err)
 	}
 
-	if err = github.Push(tempDir, owner, pat); err != nil {
+	err, cleanup := github.Push(tempDir, owner, pat)
+	if err != nil {
 		fmt.Println(err)
 	}
-	os.Remove(tempDir)
+	defer cleanup()
 }
