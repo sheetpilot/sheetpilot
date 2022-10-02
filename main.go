@@ -1,14 +1,27 @@
 package main
 
 import (
-	"log"
 	"net"
+	"os"
 
 	"github.com/sheetpilot/sheetpilot/internal/controller"
 	"github.com/sheetpilot/sheetpilot/internal/helper"
+	"github.com/sirupsen/logrus"
 
 	"google.golang.org/grpc"
 )
+
+var log *logrus.Entry
+
+func init() {
+	l := logrus.New()
+
+	log = l.WithFields(logrus.Fields{
+		"app": map[string]string{
+			"host": os.Getenv("HOST"),
+		},
+	})
+}
 
 func main() {
 	srv := grpc.NewServer()
@@ -17,7 +30,7 @@ func main() {
 	scaleController.RegisterService()
 
 	listener, conErr := net.Listen("tcp", helper.GetEnv("PORT", ":10001"))
-	log.Printf("Sheet Pilot Git Push Service Listening at http://%s", helper.GetEnv("APP_HOST_ADDRESS", "127.0.0.1:10001"))
+	log.Infof("Sheet Pilot Git Push Service Listening at http://%s", helper.GetEnv("APP_HOST_ADDRESS", "127.0.0.1:10001"))
 
 	if conErr != nil {
 		panic(conErr)

@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/sheetpilot/sheet-pilot-proto v0.0.0-20221002024531-181df7ba5484
+	github.com/sirupsen/logrus v1.9.0
 	google.golang.org/grpc v1.49.0
 	k8s.io/api v0.25.2
 	k8s.io/apimachinery v0.25.2
@@ -33,7 +34,7 @@ require (
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
 	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd // indirect
 	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
-	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
+	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
