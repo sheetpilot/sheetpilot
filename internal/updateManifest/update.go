@@ -2,12 +2,15 @@ package updateManifest
 
 import (
 	"fmt"
+	"io"
+	"log"
+
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/cli-runtime/pkg/printers"
 	"k8s.io/client-go/kubernetes/scheme"
-	"log"
 )
 
 // CheckDeployment check deployment name and return k8s Object if correct
@@ -44,4 +47,15 @@ func UpdateResourceValues(obj runtime.Object, cpuRequest, menRequest, cpuLimit, 
 	deployment.Spec.Replicas = int32Ptr(replicaCount)
 
 	return obj
+}
+
+// PrintDeployment Print correct deployment yaml to file
+func PrintDeployment(out io.Writer, obj runtime.Object) {
+	printr := printers.NewTypeSetter(scheme.Scheme).ToPrinter(&printers.YAMLPrinter{})
+
+	deployment := obj.(*appsv1.Deployment)
+
+	if err := printr.PrintObj(deployment, out); err != nil {
+		log.Println(err)
+	}
 }
