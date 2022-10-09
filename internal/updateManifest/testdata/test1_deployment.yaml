@@ -2,25 +2,25 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: my-nginx
+  name: test1
 spec:
   replicas: 5
   selector:
     matchLabels:
-      app: nginx
+      app: test1
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: nginx
+        app: test1
     spec:
       containers:
-      - image: nginx:1.14.2
-        name: nginx
+      - image: test1:1.14.2
+        name: test1
         ports:
         - containerPort: 80
-          name: nginx-tcp
+          name: test1-tcp
           protocol: TCP
         readinessProbe:
           exec:
@@ -34,16 +34,16 @@ spec:
         resources:
           limits:
             cpu: "1"
-            memory: 10Gi
+            memory: 1Gi
           requests:
             cpu: 500m
-            memory: 2Gi
+            memory: 500Mi
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
-      serviceAccountName: nginx-service
+      serviceAccountName: test1-service
       terminationGracePeriodSeconds: 30
 status: {}
