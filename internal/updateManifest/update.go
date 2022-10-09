@@ -48,7 +48,7 @@ func UpdateResourceValues(obj runtime.Object, cpuRequest, memRequest, cpuLimit, 
 	deployment := obj.(*appsv1.Deployment)
 	cpuCondition := -1
 	memCondition := -1
-
+	//deployment.Spec.Template.Spec.Containers[0].Resources.Requests = make(map[corev1.ResourceName]resource.Quantity)
 	if cpuLimit != "" {
 		cpuLMT := resource.MustParse(cpuLimit)
 		cpuCondition = cpuLMT.Cmp(resource.MustParse(cpuRequest))
