@@ -1,7 +1,7 @@
 package updateManifest
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"log"
 
@@ -13,19 +13,27 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 )
 
+var (
+	ErrorNotSupport = errors.New("not support resource type")
+	ErrMismatch     = errors.New("mismatch deployment name")
+)
+
 // CheckDeployment check deployment name and return k8s Object if correct
 func CheckDeployment(name string, yamlData []byte) (runtime.Object, error) {
-	var deployment *appsv1.Deployment
+	//var deployment *appsv1.Deployment
 	decoder := scheme.Codecs.UniversalDeserializer()
-	obj, groupVersionKind, err := decoder.Decode(yamlData, nil, nil)
+	obj, _, err := decoder.Decode(yamlData, nil, nil)
 	if err != nil {
 		log.Println(err)
 	}
-	if groupVersionKind.Group == "apps" && groupVersionKind.Version == "v1" && groupVersionKind.Kind == "Deployment" {
-		deployment = obj.(*appsv1.Deployment)
-	}
-	if deployment.Name != name {
-		return nil, fmt.Errorf("deployment is not correct")
+
+	switch deployment := obj.(type) {
+	case *appsv1.Deployment:
+		if deployment.Name != name {
+			return nil, ErrMismatch
+		}
+	default:
+		return nil, ErrorNotSupport
 	}
 
 	return obj, nil
