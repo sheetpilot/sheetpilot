@@ -105,3 +105,26 @@ func main() {
 // 	}
 // 	defer cleanup()
 // }
+
+// TestCode
+//func main() {
+//	var numOfReplica int32 = 10
+//	yamlData, err := os.ReadFile("nginx-deployment.yaml")
+//	if err != nil {
+//		log.Println(err)
+//		return
+//	}
+//	obj, err := updateManifest.CheckDeployment("my-nginx", yamlData)
+//	if err != nil {
+//		log.Println(err)
+//		return
+//	}
+//
+//	updatedObj := updateManifest.UpdateResourceValues(obj, "6", "1100Mi", "5", "", numOfReplica)
+//
+//	newFile, err := os.Create("new-nginx-deployment.yaml")
+//	if err != nil {
+//		log.Println(err)
+//	}
+//	updateManifest.PrintDeployment(newFile, updatedObj)
+//}
