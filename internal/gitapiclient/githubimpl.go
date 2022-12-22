@@ -1,9 +1,12 @@
 package gitapiclient
 
+import "github.com/sheetpilot/sheetpilot/internal/httpclient"
+
 type githubClientImpl struct {
-	apiHost string
-	token   string
-	path    string
+	apiHost    string
+	token      string
+	path       string
+	httpClient httpclient.IHttpClient
 }
 
 func (g *githubClientImpl) setApiHost(apiHost string) {
@@ -30,6 +33,10 @@ func (g *githubClientImpl) GetPath() string {
 	return g.path
 }
 
-func (g *githubClientImpl) GetFileContentFromRepo() {
+func (g *githubClientImpl) setHttpClient(client httpclient.IHttpClient) {
+	g.httpClient = client
+}
 
+func (g *githubClientImpl) GetHttpClient(client httpclient.IHttpClient) httpclient.IHttpClient {
+	return g.httpClient
 }

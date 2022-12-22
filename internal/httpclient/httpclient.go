@@ -16,7 +16,7 @@ type httpClient struct {
 	bearerToken string
 }
 
-func NewHttpClient() iHttpClient {
+func NewHttpClient() IHttpClient {
 	apiClient := new(httpClient)
 
 	apiClient.client = new(http.Client)
@@ -24,17 +24,17 @@ func NewHttpClient() iHttpClient {
 	return apiClient
 }
 
-func (h *httpClient) setHost(host string) iHttpClient {
+func (h *httpClient) setHost(host string) IHttpClient {
 	h.host = host
 	return h
 }
 
-func (h *httpClient) setBearerToken(token string) iHttpClient {
+func (h *httpClient) setBearerToken(token string) IHttpClient {
 	h.bearerToken = token
 	return h
 }
 
-func (h *httpClient) setHeader(req *http.Request, queryParams map[string]interface{}) iHttpClient {
+func (h *httpClient) setHeader(req *http.Request, queryParams map[string]interface{}) IHttpClient {
 
 	keys := make([]string, 0)
 	for k, _ := range queryParams {
@@ -48,7 +48,7 @@ func (h *httpClient) setHeader(req *http.Request, queryParams map[string]interfa
 	return h
 }
 
-func (h *httpClient) setTimeout(timeout int64) iHttpClient {
+func (h *httpClient) setTimeout(timeout int64) IHttpClient {
 	h.client.Timeout = time.Duration(timeout) * time.Second
 	return h
 }
