@@ -1,17 +1,28 @@
 package gitapiclient
 
+import "github.com/sheetpilot/sheetpilot/internal/httpclient"
+
 type gitHubClient struct {
 	githubClientImpl
 }
 
-func newGithubClient(repoPath string, token string) iGitClient {
+func NewGitHubClient(host string, token string) gitHubClient {
+	apiclient := new(gitHubClient)
 
-	ghClient := new(gitHubClient)
+	apiclient.setApiHost(host)
+	apiclient.setToken(token)
+	return *apiclient
+}
 
-	apiClient := new(githubClientImpl)
-	apiClient.setApiHost("https://api.github.com")
-	apiClient.setPath(repoPath)
-	apiClient.setToken(token)
-	ghClient.githubClientImpl = *apiClient
-	return ghClient
+func (gh *gitHubClient) githubapiClient(httpClient httpclient.IHttpClient) func(repoPath string) iGitClient {
+
+	return func(repoPath string) iGitClient {
+		apiClient := new(githubClientImpl)
+		apiClient.setApiHost(gh.apiHost)
+		apiClient.setToken(gh.token)
+		apiClient.setHttpClient(httpClient)
+		apiClient.setPath(repoPath)
+
+		return apiClient
+	}
 }

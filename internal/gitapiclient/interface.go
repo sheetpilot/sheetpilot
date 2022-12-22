@@ -7,6 +7,4 @@ type iGitClient interface {
 	GetApiHost() string
 	GetToken() string
 	GetPath() string
-
-	GetFileContentFromRepo()
 }
